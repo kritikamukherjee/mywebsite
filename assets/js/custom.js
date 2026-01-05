@@ -128,12 +128,13 @@ toggleSwitch.addEventListener('change', (e) => {
         localStorage.setItem('theme', 'light');
     }
 });
-// Form Validation
+// Form Validation - Single consolidated version
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
   // Clear previous errors
   document.querySelectorAll('.error-msg').forEach(msg => msg.textContent = '');
+  document.querySelectorAll('#contactForm input').forEach(input => input.style.borderColor = '');
   
   let isValid = true;
   
@@ -148,11 +149,17 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   if (firstName === '') {
     showError('firstName', 'First name is required');
     isValid = false;
+  } else if (firstName.length < 2) {
+    showError('firstName', 'First name must be at least 2 characters');
+    isValid = false;
   }
   
   // Validate Last Name
   if (lastName === '') {
     showError('lastName', 'Last name is required');
+    isValid = false;
+  } else if (lastName.length < 2) {
+    showError('lastName', 'Last name must be at least 2 characters');
     isValid = false;
   }
   
@@ -162,7 +169,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     showError('email', 'Email is required');
     isValid = false;
   } else if (!emailRegex.test(email)) {
-    showError('email', 'Please enter a valid email');
+    showError('email', 'Please enter a valid email address');
     isValid = false;
   }
   
@@ -180,50 +187,36 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   if (address === '') {
     showError('address', 'Address is required');
     isValid = false;
+  } else if (address.length < 5) {
+    showError('address', 'Please enter a complete address');
+    isValid = false;
   }
   
-  // If form is valid, display the data
-  if (isValid) {
-    const rate1 = document.getElementById('rate1').value;
-    const rate2 = document.getElementById('rate2').value;
-    const rate3 = document.getElementById('rate3').value;
-    const average = ((parseInt(rate1) + parseInt(rate2) + parseInt(rate3)) / 3).toFixed(1);
-    
-    const output = `
-      <strong>Form Submitted Successfully!</strong><br><br>
-      <strong>Name:</strong> ${firstName}<br>
-      <strong>Surname:</strong> ${lastName}<br>
-      <strong>Email:</strong> ${email}<br>
-      <strong>Phone:</strong> ${phone}<br>
-      <strong>Address:</strong> ${address}<br><br>
-      <strong>Ratings Average:</strong> ${average}
-    `;
-    
-    document.getElementById('formDataOutput').innerHTML = output;
-    document.getElementById('formDataOutput').classList.remove('d-none');
-    document.getElementById('averageOutput').innerHTML = `Average Rating: ${average}/10`;
+  // STOP HERE if form is invalid - don't process submission
+  if (!isValid) {
+    alert('Please correct all errors before submitting the form.');
+    return false;
   }
-});
-
-function showError(fieldId, message) {
-  const field = document.getElementById(fieldId);
-  const errorMsg = field.nextElementSibling;
-  if (errorMsg && errorMsg.classList.contains('error-msg')) {
-    errorMsg.textContent = message;
-    errorMsg.style.color = '#dc3545';
-    errorMsg.style.fontSize = '0.875rem';
-    errorMsg.style.marginTop = '0.25rem';
-  }
-  field.style.borderColor = '#dc3545';
-}
-
-// Reset border color on input
-document.querySelectorAll('#contactForm input').forEach(input => {
-  input.addEventListener('input', function() {
-    this.style.borderColor = '';
-    const errorMsg = this.nextElementSibling;
-    if (errorMsg && errorMsg.classList.contains('error-msg')) {
-      errorMsg.textContent = '';
-    }
-  });
+  
+  // Only process if ALL validations passed
+  const rate1 = document.getElementById('rate1').value;
+  const rate2 = document.getElementById('rate2').value;
+  const rate3 = document.getElementById('rate3').value;
+  const average = ((parseInt(rate1) + parseInt(rate2) + parseInt(rate3)) / 3).toFixed(1);
+  
+  const output = `
+    <strong>Form Submitted Successfully!</strong><br><br>
+    <strong>Name:</strong> ${firstName}<br>
+    <strong>Surname:</strong> ${lastName}<br>
+    <strong>Email:</strong> ${email}<br>
+    <strong>Phone:</strong> ${phone}<br>
+    <strong>Address:</strong> ${address}<br><br>
+    <strong>Ratings Average:</strong> ${average}
+  `;
+  
+  document.getElementById('formDataOutput').innerHTML = output;
+  document.getElementById('formDataOutput').classList.remove('d-none');
+  document.getElementById('averageOutput').innerHTML = `Average Rating: ${average}/10`;
+  
+  alert('Form submitted successfully!');
 });
