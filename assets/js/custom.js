@@ -1,5 +1,5 @@
 // FORM SUBMISSION
-document.getElementById('contactForm').addEventListener('submit', function(e) {
+document.getElementById('contactForm')?.addEventListener('submit', function(e) {
     e.preventDefault();
 
     const formData = {
@@ -49,18 +49,25 @@ let isGameActive = false;
 
 function initGame() {
     const board = document.getElementById('game-board');
-    const difficulty = document.getElementById('difficulty').value;
+    const difficulty = document.getElementById('difficulty')?.value || 'easy';
     const totalCards = difficulty === 'easy' ? 12 : 24;
     const cols = difficulty === 'easy' ? 4 : 6;
+    
+    if (!board) return;
     
     board.innerHTML = '';
     board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     moves = 0;
     matches = 0;
     flippedCards = [];
-    document.getElementById('moves-count').innerText = '0';
-    document.getElementById('matches-count').innerText = '0';
-    document.getElementById('win-message').classList.add('d-none');
+    
+    const movesEl = document.getElementById('moves-count');
+    const matchesEl = document.getElementById('matches-count');
+    const winMsg = document.getElementById('win-message');
+    
+    if (movesEl) movesEl.innerText = '0';
+    if (matchesEl) matchesEl.innerText = '0';
+    if (winMsg) winMsg.classList.add('d-none');
 
     let gameIcons = [...icons.slice(0, totalCards/2), ...icons.slice(0, totalCards/2)];
     gameIcons.sort(() => Math.random() - 0.5);
@@ -81,14 +88,20 @@ function initGame() {
 
 function checkMatch() {
     moves++;
-    document.getElementById('moves-count').innerText = moves;
+    const movesEl = document.getElementById('moves-count');
+    if (movesEl) movesEl.innerText = moves;
+    
     const [c1, c2] = flippedCards;
     if(c1.icon === c2.icon) {
         matches++;
-        document.getElementById('matches-count').innerText = matches;
+        const matchesEl = document.getElementById('matches-count');
+        if (matchesEl) matchesEl.innerText = matches;
         flippedCards = [];
-        if(matches === document.querySelectorAll('.memory-card').length / 2) {
-            document.getElementById('win-message').classList.remove('d-none');
+        
+        const totalPairs = document.querySelectorAll('.memory-card').length / 2;
+        if(matches === totalPairs) {
+            const winMsg = document.getElementById('win-message');
+            if (winMsg) winMsg.classList.remove('d-none');
         }
     } else {
         setTimeout(() => {
@@ -99,32 +112,33 @@ function checkMatch() {
     }
 }
 
-document.getElementById('startGame').addEventListener('click', () => {
+document.getElementById('startGame')?.addEventListener('click', () => {
     isGameActive = true;
     initGame();
 });
 
-document.getElementById('restartGame').addEventListener('click', initGame);
+document.getElementById('restartGame')?.addEventListener('click', initGame);
 
-// THEME TOGGLE FUNCTIONALITY
+// THEME TOGGLE FUNCTIONALITY - FIXED VERSION (No localStorage)
 const toggleSwitch = document.querySelector('#theme-toggle');
 
-// Load saved theme preference on page load
-const currentTheme = localStorage.getItem('theme');
-if (currentTheme) {
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    if (currentTheme === 'dark') {
-        toggleSwitch.checked = true;
-    }
-}
+if (toggleSwitch) {
+    // Set initial theme to light on page load
+    document.documentElement.setAttribute('data-theme', 'light');
+    toggleSwitch.checked = false;
 
-// Handle toggle change
-toggleSwitch.addEventListener('change', (e) => {
-    if (e.target.checked) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-    } else {
-        document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-    }
-});
+    // Handle toggle change
+    toggleSwitch.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            console.log('Theme switched to dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            console.log('Theme switched to light');
+        }
+    });
+    
+    console.log('Theme toggle initialized successfully');
+} else {
+    console.error('Theme toggle button not found!');
+}
