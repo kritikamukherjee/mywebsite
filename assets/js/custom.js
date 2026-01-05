@@ -1,46 +1,160 @@
-// FORM SUBMISSION
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+// ========================================
+// FORM VALIDATION - COMPLETE AND STRICT
+// ========================================
 
-    const formData = {
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        address: document.getElementById('address').value,
-        ratings: [
-            parseInt(document.getElementById('rate1').value),
-            parseInt(document.getElementById('rate2').value),
-            parseInt(document.getElementById('rate3').value)
-        ]
-    };
+function showError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  const errorMsg = field.nextElementSibling;
+  if (errorMsg && errorMsg.classList.contains('error-msg')) {
+    errorMsg.textContent = message;
+    errorMsg.style.color = '#dc3545';
+    errorMsg.style.fontSize = '0.875rem';
+    errorMsg.style.marginTop = '0.25rem';
+  }
+  field.style.borderColor = '#dc3545';
+}
 
-    console.log("Form Data Collected:", formData);
-
-    const average = (formData.ratings.reduce((a, b) => a + b, 0) / 3).toFixed(1);
-
-    const outputDiv = document.getElementById('formDataOutput');
-    outputDiv.classList.remove('d-none');
-    outputDiv.innerHTML = `
-        <p><strong>Name:</strong> ${formData.firstName}</p>
-        <p><strong>Surname:</strong> ${formData.lastName}</p>
-        <p><strong>Email:</strong> ${formData.email}</p>
-        <p><strong>Phone:</strong> ${formData.phone}</p>
-        <p><strong>Address:</strong> ${formData.address}</p>
-    `;
-
-    const avgDiv = document.getElementById('averageOutput');
-    let color = 'green';
-    if (average < 4) color = 'red';
-    else if (average < 7) color = 'orange';
-
-    avgDiv.style.color = color;
-    avgDiv.innerHTML = `${formData.firstName} ${formData.lastName}: ${average}`;
-
-    alert("Form submitted successfully!");
+// Reset border color and errors on input
+document.querySelectorAll('#contactForm input').forEach(input => {
+  input.addEventListener('input', function() {
+    this.style.borderColor = '';
+    const errorMsg = this.nextElementSibling;
+    if (errorMsg && errorMsg.classList.contains('error-msg')) {
+      errorMsg.textContent = '';
+    }
+  });
 });
 
+// Main form submission handler
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  console.log('Form submission started');
+  
+  // Clear ALL previous errors
+  document.querySelectorAll('.error-msg').forEach(msg => msg.textContent = '');
+  document.querySelectorAll('#contactForm input').forEach(input => input.style.borderColor = '');
+  
+  let isValid = true;
+  
+  // Get form values
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+  
+  console.log('Form values:', { firstName, lastName, email, phone, address });
+  
+  // Validate First Name
+  if (firstName === '') {
+    showError('firstName', 'First name is required');
+    isValid = false;
+    console.log('First name validation failed: empty');
+  } else if (firstName.length < 2) {
+    showError('firstName', 'First name must be at least 2 characters');
+    isValid = false;
+    console.log('First name validation failed: too short');
+  }
+  
+  // Validate Last Name
+  if (lastName === '') {
+    showError('lastName', 'Last name is required');
+    isValid = false;
+    console.log('Last name validation failed: empty');
+  } else if (lastName.length < 2) {
+    showError('lastName', 'Last name must be at least 2 characters');
+    isValid = false;
+    console.log('Last name validation failed: too short');
+  }
+  
+  // Validate Email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email === '') {
+    showError('email', 'Email is required');
+    isValid = false;
+    console.log('Email validation failed: empty');
+  } else if (!emailRegex.test(email)) {
+    showError('email', 'Please enter a valid email address (e.g., user@example.com)');
+    isValid = false;
+    console.log('Email validation failed: invalid format');
+  }
+  
+  // Validate Lithuanian Phone Number
+  const lithuanianPhoneRegex = /^(\+370|370|8)[0-9]{8}$/;
+  const cleanPhone = phone.replace(/\s/g, '');
+  if (phone === '') {
+    showError('phone', 'Phone number is required');
+    isValid = false;
+    console.log('Phone validation failed: empty');
+  } else if (!lithuanianPhoneRegex.test(cleanPhone)) {
+    showError('phone', 'Please enter a valid Lithuanian phone number (e.g., +370 6xx xxxxx or 8xxxxxxxx)');
+    isValid = false;
+    console.log('Phone validation failed: invalid format');
+  }
+  
+  // Validate Address
+  if (address === '') {
+    showError('address', 'Address is required');
+    isValid = false;
+    console.log('Address validation failed: empty');
+  } else if (address.length < 5) {
+    showError('address', 'Please enter a complete address (minimum 5 characters)');
+    isValid = false;
+    console.log('Address validation failed: too short');
+  }
+  
+  console.log('Validation result:', isValid);
+  
+  // CRITICAL: STOP HERE if form is invalid
+  if (!isValid) {
+    alert('❌ Please correct all errors before submitting the form!');
+    console.log('Form submission blocked due to validation errors');
+    return false; // Prevent form submission
+  }
+  
+  // ========================================
+  // ONLY EXECUTE IF ALL VALIDATIONS PASSED
+  // ========================================
+  
+  console.log('All validations passed - processing form');
+  
+  const rate1 = document.getElementById('rate1').value;
+  const rate2 = document.getElementById('rate2').value;
+  const rate3 = document.getElementById('rate3').value;
+  const average = ((parseInt(rate1) + parseInt(rate2) + parseInt(rate3)) / 3).toFixed(1);
+  
+  const output = `
+    <strong>✅ Form Submitted Successfully!</strong><br><br>
+    <strong>Name:</strong> ${firstName}<br>
+    <strong>Surname:</strong> ${lastName}<br>
+    <strong>Email:</strong> ${email}<br>
+    <strong>Phone:</strong> ${phone}<br>
+    <strong>Address:</strong> ${address}<br><br>
+    <strong>Ratings Average:</strong> ${average}/10
+  `;
+  
+  document.getElementById('formDataOutput').innerHTML = output;
+  document.getElementById('formDataOutput').classList.remove('d-none');
+  
+  // Color code the average
+  let color = 'green';
+  if (average < 4) color = 'red';
+  else if (average < 7) color = 'orange';
+  
+  const avgDiv = document.getElementById('averageOutput');
+  avgDiv.style.color = color;
+  avgDiv.innerHTML = `${firstName} ${lastName}: ${average}/10`;
+  
+  alert('✅ Form submitted successfully!');
+  console.log('Form submission completed successfully');
+});
+
+// ========================================
 // MEMORY GAME
+// ========================================
+
 const icons = ['🚀', '🧠', '💻', '🎨', '⚡', '🌈', '🍕', '🐱', '🔥', '💎', '🎮', '🎸'];
 let flippedCards = [];
 let moves = 0;
@@ -106,7 +220,10 @@ document.getElementById('startGame').addEventListener('click', () => {
 
 document.getElementById('restartGame').addEventListener('click', initGame);
 
+// ========================================
 // THEME TOGGLE FUNCTIONALITY
+// ========================================
+
 const toggleSwitch = document.querySelector('#theme-toggle');
 
 // Load saved theme preference on page load
@@ -127,96 +244,4 @@ toggleSwitch.addEventListener('change', (e) => {
         document.documentElement.setAttribute('data-theme', 'light');
         localStorage.setItem('theme', 'light');
     }
-});
-// Form Validation - Single consolidated version
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  
-  // Clear previous errors
-  document.querySelectorAll('.error-msg').forEach(msg => msg.textContent = '');
-  document.querySelectorAll('#contactForm input').forEach(input => input.style.borderColor = '');
-  
-  let isValid = true;
-  
-  // Get form values
-  const firstName = document.getElementById('firstName').value.trim();
-  const lastName = document.getElementById('lastName').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const address = document.getElementById('address').value.trim();
-  
-  // Validate First Name
-  if (firstName === '') {
-    showError('firstName', 'First name is required');
-    isValid = false;
-  } else if (firstName.length < 2) {
-    showError('firstName', 'First name must be at least 2 characters');
-    isValid = false;
-  }
-  
-  // Validate Last Name
-  if (lastName === '') {
-    showError('lastName', 'Last name is required');
-    isValid = false;
-  } else if (lastName.length < 2) {
-    showError('lastName', 'Last name must be at least 2 characters');
-    isValid = false;
-  }
-  
-  // Validate Email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (email === '') {
-    showError('email', 'Email is required');
-    isValid = false;
-  } else if (!emailRegex.test(email)) {
-    showError('email', 'Please enter a valid email address');
-    isValid = false;
-  }
-  
-  // Validate Lithuanian Phone Number
-  const lithuanianPhoneRegex = /^(\+370|370|8)[0-9]{8}$/;
-  if (phone === '') {
-    showError('phone', 'Phone number is required');
-    isValid = false;
-  } else if (!lithuanianPhoneRegex.test(phone.replace(/\s/g, ''))) {
-    showError('phone', 'Please enter a valid Lithuanian phone number (e.g., +370 6xx xxxxx)');
-    isValid = false;
-  }
-  
-  // Validate Address
-  if (address === '') {
-    showError('address', 'Address is required');
-    isValid = false;
-  } else if (address.length < 5) {
-    showError('address', 'Please enter a complete address');
-    isValid = false;
-  }
-  
-  // STOP HERE if form is invalid - don't process submission
-  if (!isValid) {
-    alert('Please correct all errors before submitting the form.');
-    return false;
-  }
-  
-  // Only process if ALL validations passed
-  const rate1 = document.getElementById('rate1').value;
-  const rate2 = document.getElementById('rate2').value;
-  const rate3 = document.getElementById('rate3').value;
-  const average = ((parseInt(rate1) + parseInt(rate2) + parseInt(rate3)) / 3).toFixed(1);
-  
-  const output = `
-    <strong>Form Submitted Successfully!</strong><br><br>
-    <strong>Name:</strong> ${firstName}<br>
-    <strong>Surname:</strong> ${lastName}<br>
-    <strong>Email:</strong> ${email}<br>
-    <strong>Phone:</strong> ${phone}<br>
-    <strong>Address:</strong> ${address}<br><br>
-    <strong>Ratings Average:</strong> ${average}
-  `;
-  
-  document.getElementById('formDataOutput').innerHTML = output;
-  document.getElementById('formDataOutput').classList.remove('d-none');
-  document.getElementById('averageOutput').innerHTML = `Average Rating: ${average}/10`;
-  
-  alert('Form submitted successfully!');
 });
