@@ -47,6 +47,12 @@ let moves = 0;
 let matches = 0;
 let isGameActive = false;
 
+// ========== NEW: Timer variables ==========
+let timerInterval = null;
+let startTime = 0;
+let elapsedTime = 0;
+// ==========================================
+
 function initGame() {
     const board = document.getElementById('game-board');
     const difficulty = document.getElementById('difficulty')?.value || 'easy';
@@ -60,6 +66,12 @@ function initGame() {
     moves = 0;
     matches = 0;
     flippedCards = [];
+    
+    // ========== NEW: Reset timer ==========
+    stopTimer();
+    elapsedTime = 0;
+    updateTimerDisplay();
+    // ======================================
     
     const movesEl = document.getElementById('moves-count');
     const matchesEl = document.getElementById('matches-count');
@@ -84,6 +96,10 @@ function initGame() {
         });
         board.appendChild(card);
     });
+    
+    // ========== NEW: Display best results ==========
+    displayBestResults();
+    // ===============================================
 }
 
 function checkMatch() {
@@ -100,8 +116,23 @@ function checkMatch() {
         
         const totalPairs = document.querySelectorAll('.memory-card').length / 2;
         if(matches === totalPairs) {
+            // ========== NEW: Stop timer on win ==========
+            stopTimer();
+            // ============================================
+            
             const winMsg = document.getElementById('win-message');
-            if (winMsg) winMsg.classList.remove('d-none');
+            if (winMsg) {
+                // ========== NEW: Show time in win message ==========
+                const difficulty = document.getElementById('difficulty')?.value || 'easy';
+                const time = formatTime(elapsedTime);
+                winMsg.innerHTML = `<h3>Congratulations! You've matched them all!</h3><p>Moves: ${moves} | Time: ${time}</p>`;
+                // ===================================================
+                winMsg.classList.remove('d-none');
+            }
+            
+            // ========== NEW: Save best result ==========
+            saveBestResult();
+            // ===========================================
         }
     } else {
         setTimeout(() => {
@@ -112,12 +143,79 @@ function checkMatch() {
     }
 }
 
+// ========== NEW: Timer functions ==========
+function startTimer() {
+    startTime = Date.now() - elapsedTime;
+    timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        updateTimerDisplay();
+    }, 100);
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+function updateTimerDisplay() {
+    const timerEl = document.getElementById('timer-display');
+    if (timerEl) {
+        timerEl.innerText = formatTime(elapsedTime);
+    }
+}
+
+function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+// ==========================================
+
+// ========== NEW: Best results functions ==========
+function saveBestResult() {
+    const difficulty = document.getElementById('difficulty')?.value || 'easy';
+    const bestResults = JSON.parse(localStorage.getItem('memoryGameBest') || '{}');
+    
+    if (!bestResults[difficulty] || moves < bestResults[difficulty]) {
+        bestResults[difficulty] = moves;
+        localStorage.setItem('memoryGameBest', JSON.stringify(bestResults));
+        displayBestResults();
+    }
+}
+
+function displayBestResults() {
+    const bestResults = JSON.parse(localStorage.getItem('memoryGameBest') || '{}');
+    const easyBest = document.getElementById('easy-best');
+    const hardBest = document.getElementById('hard-best');
+    
+    if (easyBest) {
+        easyBest.innerText = bestResults.easy ? `${bestResults.easy} moves` : 'N/A';
+    }
+    if (hardBest) {
+        hardBest.innerText = bestResults.hard ? `${bestResults.hard} moves` : 'N/A';
+    }
+}
+// =================================================
+
+// ========== UPDATED: Start game with timer ==========
 document.getElementById('startGame')?.addEventListener('click', () => {
     isGameActive = true;
     initGame();
+    startTimer(); // NEW: Start timer
 });
+// ====================================================
 
-document.getElementById('restartGame')?.addEventListener('click', initGame);
+// ========== UPDATED: Restart game with timer ==========
+document.getElementById('restartGame')?.addEventListener('click', () => {
+    initGame();
+    if (isGameActive) {
+        startTimer(); // NEW: Start timer if game is active
+    }
+});
+// ======================================================
 
 // THEME TOGGLE FUNCTIONALITY - FIXED VERSION (No localStorage)
 const toggleSwitch = document.querySelector('#theme-toggle');
@@ -142,3 +240,7 @@ if (toggleSwitch) {
 } else {
     console.error('Theme toggle button not found!');
 }
+
+// ========== NEW: Load best results on page load ==========
+window.addEventListener('load', displayBestResults);
+// =========================================================
