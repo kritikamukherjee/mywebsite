@@ -373,3 +373,41 @@ body {
   background-color: #444;
   color: #fff;
 }
+/* ========== CONFETTI ANIMATION ========== */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  z-index: 9999;
+  animation: confetti-fall linear forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotateZ(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotateZ(720deg);
+    opacity: 0;
+  }
+}
+
+/* Make confetti pieces varied shapes */
+.confetti:nth-child(odd) {
+  border-radius: 50%;
+}
+
+.confetti:nth-child(even) {
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.confetti:nth-child(3n) {
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+}
+/* ======================================== */

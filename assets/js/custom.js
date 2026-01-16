@@ -120,12 +120,16 @@ function checkMatch() {
             stopTimer();
             // ============================================
             
+            // ========== NEW: Celebration animation ==========
+            createConfetti();
+            // ================================================
+            
             const winMsg = document.getElementById('win-message');
             if (winMsg) {
                 // ========== NEW: Show time in win message ==========
                 const difficulty = document.getElementById('difficulty')?.value || 'easy';
                 const time = formatTime(elapsedTime);
-                winMsg.innerHTML = `<h3>Congratulations! You've matched them all!</h3><p>Moves: ${moves} | Time: ${time}</p>`;
+                winMsg.innerHTML = `<h3>🎉 Congratulations! You've matched them all! 🎉</h3><p>Moves: ${moves} | Time: ${time}</p>`;
                 // ===================================================
                 winMsg.classList.remove('d-none');
             }
@@ -243,4 +247,25 @@ if (toggleSwitch) {
 
 // ========== NEW: Load best results on page load ==========
 window.addEventListener('load', displayBestResults);
+// =========================================================
+
+// ========== NEW: Confetti celebration animation ==========
+function createConfetti() {
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff1493'];
+    const confettiCount = 100;
+    
+    for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 4000);
+        }, i * 10);
+    }
+}
 // =========================================================
