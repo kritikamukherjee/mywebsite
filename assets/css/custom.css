@@ -373,29 +373,133 @@ body {
   background-color: #444;
   color: #fff;
 }
-/* From Uiverse.io by atishaytuli07 */ 
-.container {
+/* ========== PORTFOLIO CARDS SECTION ========== */
+.portfolio-cards {
+  background-color: var(--background-color);
+  padding: 80px 0;
+}
+
+.portfolio-card {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 15px;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.portfolio-card:hover {
+  transform: translateY(-10px);
+}
+
+.portfolio-card.card-1 {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.portfolio-card.card-2 {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.portfolio-card.card-3 {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.portfolio-card .card-image {
+  position: absolute;
   width: 100%;
   height: 100%;
-  --s: 7px;
-  --square-pattern: repeating-linear-gradient(
-      90deg,
-      #ff0000 0,
-      #ff0000 50%,
-      #fff 50%,
-      #fff 100%
-    ),
-    repeating-linear-gradient(0deg, #ff0000 0, #ff0000 50%, #fff 50%, #fff 100%);
-  --tree-pattern: repeating-conic-gradient(
-    from 45deg,
-    #006400 0 25%,
-    #32cd32 0 50%
-  );
-  background: var(--square-pattern), var(--tree-pattern);
-  background-size:
-    calc(2 * var(--s)) calc(2 * var(--s)),
-    calc(4 * var(--s)) calc(4 * var(--s));
-  background-position:
-    0 0,
-    center;
+  object-fit: cover;
+  border-radius: 15px;
+  z-index: 1;
 }
+
+.portfolio-card .card-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.6;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 15px;
+  opacity: 0;
+  z-index: 2;
+  transition: opacity 0.5s ease;
+}
+
+.portfolio-card::before,
+.portfolio-card::after {
+  position: absolute;
+  content: "";
+  width: 20%;
+  height: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.5s;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.portfolio-card::before {
+  top: 0;
+  right: 0;
+  border-radius: 0 15px 0 100%;
+}
+
+.portfolio-card::after {
+  bottom: 0;
+  left: 0;
+  border-radius: 0 100% 0 15px;
+}
+
+.portfolio-card:hover::before,
+.portfolio-card:hover::after {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  transition: all 0.5s;
+  background-color: transparent;
+}
+
+.portfolio-card:hover .card-overlay {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .portfolio-card {
+    height: 350px;
+  }
+  
+  .portfolio-card .card-overlay {
+    font-size: 16px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .portfolio-card {
+    height: 300px;
+  }
+  
+  .portfolio-card .card-overlay {
+    font-size: 14px;
+    padding: 15px;
+  }
+}
+/* ============================================== */
