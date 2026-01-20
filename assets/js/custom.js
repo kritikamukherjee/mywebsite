@@ -40,18 +40,17 @@ document.getElementById('contactForm')?.addEventListener('submit', function(e) {
     alert("Form submitted successfully!");
 });
 
-// MEMORY GAME
+// ========== MEMORY GAME ==========
 const icons = ['🚀', '🧠', '💻', '🎨', '⚡', '🌈', '🍕', '🐱', '🔥', '💎', '🎮', '🎸'];
 let flippedCards = [];
 let moves = 0;
 let matches = 0;
 let isGameActive = false;
 
-// ========== NEW: Timer variables ==========
+// Timer variables
 let timerInterval = null;
 let startTime = 0;
 let elapsedTime = 0;
-// ==========================================
 
 function initGame() {
     const board = document.getElementById('game-board');
@@ -67,11 +66,10 @@ function initGame() {
     matches = 0;
     flippedCards = [];
     
-    // ========== NEW: Reset timer ==========
+    // Reset timer
     stopTimer();
     elapsedTime = 0;
     updateTimerDisplay();
-    // ======================================
     
     const movesEl = document.getElementById('moves-count');
     const matchesEl = document.getElementById('matches-count');
@@ -97,9 +95,8 @@ function initGame() {
         board.appendChild(card);
     });
     
-    // ========== NEW: Display best results ==========
+    // Display best results
     displayBestResults();
-    // ===============================================
 }
 
 function checkMatch() {
@@ -116,27 +113,22 @@ function checkMatch() {
         
         const totalPairs = document.querySelectorAll('.memory-card').length / 2;
         if(matches === totalPairs) {
-            // ========== NEW: Stop timer on win ==========
+            // Stop timer on win
             stopTimer();
-            // ============================================
             
-            // ========== NEW: Celebration animation ==========
+            // Celebration animation
             createConfetti();
-            // ================================================
             
             const winMsg = document.getElementById('win-message');
             if (winMsg) {
-                // ========== NEW: Show time in win message ==========
                 const difficulty = document.getElementById('difficulty')?.value || 'easy';
                 const time = formatTime(elapsedTime);
                 winMsg.innerHTML = `<h3>🎉 Congratulations! You've matched them all! 🎉</h3><p>Moves: ${moves} | Time: ${time}</p>`;
-                // ===================================================
                 winMsg.classList.remove('d-none');
             }
             
-            // ========== NEW: Save best result ==========
+            // Save best result
             saveBestResult();
-            // ===========================================
         }
     } else {
         setTimeout(() => {
@@ -147,7 +139,7 @@ function checkMatch() {
     }
 }
 
-// ========== NEW: Timer functions ==========
+// ========== TIMER FUNCTIONS ==========
 function startTimer() {
     startTime = Date.now() - elapsedTime;
     timerInterval = setInterval(() => {
@@ -176,17 +168,20 @@ function formatTime(ms) {
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
-// ==========================================
 
-// ========== NEW: Best results functions ==========
+// ========== BEST RESULTS FUNCTIONS (localStorage) ==========
 function saveBestResult() {
     const difficulty = document.getElementById('difficulty')?.value || 'easy';
     const bestResults = JSON.parse(localStorage.getItem('memoryGameBest') || '{}');
     
+    // Check if current result is better (fewer moves) or if no best exists
     if (!bestResults[difficulty] || moves < bestResults[difficulty]) {
         bestResults[difficulty] = moves;
         localStorage.setItem('memoryGameBest', JSON.stringify(bestResults));
         displayBestResults();
+        
+        // Show notification that it's a new best score
+        console.log(`🏆 NEW BEST SCORE for ${difficulty}: ${moves} moves!`);
     }
 }
 
@@ -202,26 +197,42 @@ function displayBestResults() {
         hardBest.innerText = bestResults.hard ? `${bestResults.hard} moves` : 'N/A';
     }
 }
-// =================================================
 
-// ========== UPDATED: Start game with timer ==========
+// ========== GAME CONTROLS ==========
 document.getElementById('startGame')?.addEventListener('click', () => {
     isGameActive = true;
     initGame();
-    startTimer(); // NEW: Start timer
+    startTimer();
 });
-// ====================================================
 
-// ========== UPDATED: Restart game with timer ==========
 document.getElementById('restartGame')?.addEventListener('click', () => {
     initGame();
     if (isGameActive) {
-        startTimer(); // NEW: Start timer if game is active
+        startTimer();
     }
 });
-// ======================================================
 
-// THEME TOGGLE FUNCTIONALITY - FIXED VERSION (No localStorage)
+// ========== CONFETTI CELEBRATION ANIMATION ==========
+function createConfetti() {
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff1493'];
+    const confettiCount = 100;
+    
+    for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 4000);
+        }, i * 10);
+    }
+}
+
+// ========== THEME TOGGLE FUNCTIONALITY ==========
 const toggleSwitch = document.querySelector('#theme-toggle');
 
 if (toggleSwitch) {
@@ -245,27 +256,5 @@ if (toggleSwitch) {
     console.error('Theme toggle button not found!');
 }
 
-// ========== NEW: Load best results on page load ==========
+// ========== LOAD BEST RESULTS ON PAGE LOAD ==========
 window.addEventListener('load', displayBestResults);
-// =========================================================
-
-// ========== NEW: Confetti celebration animation ==========
-function createConfetti() {
-    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff1493'];
-    const confettiCount = 100;
-    
-    for (let i = 0; i < confettiCount; i++) {
-        setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + 'vw';
-            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDelay = Math.random() * 0.5 + 's';
-            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            document.body.appendChild(confetti);
-            
-            setTimeout(() => confetti.remove(), 4000);
-        }, i * 10);
-    }
-}
-// =========================================================

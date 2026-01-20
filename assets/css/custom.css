@@ -373,6 +373,44 @@ body {
   background-color: #444;
   color: #fff;
 }
+.best-results {
+  background-color: var(--bg-color);
+  border: 2px solid var(--accent-color) !important;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .best-results {
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+.best-results h5 {
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+}
+
+/* Confetti Animation */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  z-index: 9999;
+  animation: confetti-fall linear forwards;
+  pointer-events: none;
+}
 /* ========== PORTFOLIO CARDS SECTION ========== */
 .portfolio-cards {
   background-color: var(--background-color);

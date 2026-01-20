@@ -958,18 +958,32 @@
   <p class="container" data-aos="fade-up" style="text-align: center; margin-bottom: 2rem;">Test your focus! Match all the pairs to win.</p>
 
   <div class="container" data-aos="fade-up">
-    <div class="game-controls mb-4 d-flex flex-wrap gap-3 align-items-center">
-      <select id="difficulty" class="form-select w-auto">
-        <option value="easy">Easy (4x3)</option>
-        <option value="hard">Hard (6x4)</option>
-      </select>
-      <button id="startGame" class="btn btn-primary">Start Game</button>
-      <button id="restartGame" class="btn btn-secondary">Restart</button>
-      
-      <div id="stats-panel" class="d-flex gap-4 ms-auto fw-bold">
-        <span>Moves: <span id="moves-count">0</span></span>
-        <span>Matches: <span id="matches-count">0</span></span>
-      </div>
+    <<div class="game-controls mb-4 d-flex flex-wrap gap-3 align-items-center">
+  <select id="difficulty" class="form-select w-auto">
+    <option value="easy">Easy (4x3)</option>
+    <option value="hard">Hard (6x4)</option>
+  </select>
+  <button id="startGame" class="btn btn-primary">Start Game</button>
+  <button id="restartGame" class="btn btn-secondary">Restart</button>
+  
+  <div id="stats-panel" class="d-flex gap-4 ms-auto fw-bold">
+    <span>Moves: <span id="moves-count">0</span></span>
+    <span>Matches: <span id="matches-count">0</span></span>
+    <span>Time: <span id="timer-display">0:00</span></span>
+  </div>
+</div>
+
+<div class="best-results mb-4 p-3 border rounded">
+  <h5 class="mb-3">🏆 Best Results</h5>
+  <div class="d-flex gap-4">
+    <div>
+      <strong>Easy:</strong> <span id="easy-best">N/A</span>
+    </div>
+    <div>
+      <strong>Hard:</strong> <span id="hard-best">N/A</span>
+    </div>
+  </div>
+</div>
     </div>
 
     <div id="win-message" class="alert alert-success d-none text-center">
